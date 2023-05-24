@@ -10,6 +10,6 @@
 
 
 ## Observation on the requirements
-- What is the point of taking the client IP from the client side. moreover, there is some trust issue on this.
+- Though we should take the client IP from the backend request, instead sending this from frontend. I believe you are doing this the keep this assignment simple.
 - I had to change the `date` column to `record_date`. Because using keywords as table column titles sometimes cause unexpected issues.
 - In `PK (date, country_code, campaign_id, creative_id, browser_id, device_id)` did you mean Primary Key? But, a table can't have multiple primary keys.
