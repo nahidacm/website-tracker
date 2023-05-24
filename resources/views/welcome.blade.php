@@ -6,16 +6,20 @@
     <script>
         // TASK: implement App object with methods conversion() and track() 
         var App = {
+            conversionType: '',
+
             conversion: function(conversionType) {
-                
+                this.conversionType = conversionType; 
             },
 
             track: function(trackingConfigObj) {
-                // Collect information from trackingConfigObj
                 var trackingData = {
-                    // Add properties from trackingConfigObj as needed
-                    property1: trackingConfigObj.property1,
-                    property2: trackingConfigObj.property2
+                    cid: trackingConfigObj.campaignId,
+                    crid: trackingConfigObj.creativeId,
+                    bid: trackingConfigObj.browserId,
+                    did: trackingConfigObj.deviceId,
+                    cip: trackingConfigObj.clientIp,
+                    conv: this.conversionType
                 };
 
                 // Build URL query string
@@ -28,6 +32,9 @@
                 // Create an image with src to the Laravel app backend
                 var image = new Image();
                 image.src = '<?= url("/")?>/track?' + queryString;
+
+                // Append the image element to the DOM to load the pixel image
+                document.body.appendChild(image);
             }
         };
     </script>

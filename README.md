@@ -8,6 +8,7 @@
 2. `cd <path to repo>`
 3. `cp .env.example .env`
 4. `./vendor/bin/sail up -d`
+5. Open `http://localhost:3099` this will send an conversion request to backend
 
 
 ## Observation on the scope of work
