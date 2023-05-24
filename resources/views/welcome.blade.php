@@ -27,7 +27,7 @@
 
                 // Create an image with src to the Laravel app backend
                 var image = new Image();
-                image.src = 'https://your-laravel-app.com/track?' + queryString;
+                image.src = '<?= url("/")?>/track?' + queryString;
             }
         };
     </script>
