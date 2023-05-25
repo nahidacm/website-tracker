@@ -10,6 +10,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\CampaignTracking;
+use Torann\GeoIP\Facades\GeoIP;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class TrackEventJob implements ShouldQueue
 {
@@ -33,14 +36,18 @@ class TrackEventJob implements ShouldQueue
         //get country code for the ip in this trackingData, store the data in DB as per requirement.
         //Cache the ip API, to avoid duplicate calls.
 
-        $trackingData = new CampaignTracking();
-        $trackingData->record_date = '2023-05-23';
-        $trackingData->country_code = 'USA';
-        $trackingData->campaign_id = 1;
-        $trackingData->creative_id = 1;
-        $trackingData->browser_id = 1;
-        $trackingData->device_id = 1;
-        $trackingData->count = 10;
-        $trackingData->save();
+        // $countryCode = GeoIP::getLocation($trackingData['cip'])->iso_code;
+        // Log::info($trackingData);
+        // Log::info($countryCode);
+
+        $campaignTracking = new CampaignTracking();
+        $campaignTracking->record_date = Carbon::today(); // @ToDo Confirm timezone and format
+        $campaignTracking->country_code = GeoIP::getLocation($trackingData['cip'])->iso_code;
+        $campaignTracking->campaign_id = 1;
+        $campaignTracking->creative_id = 1;
+        $campaignTracking->browser_id = 1;
+        $campaignTracking->device_id = 1;
+        $campaignTracking->count = 10;
+        $campaignTracking->save();
     }
 }
