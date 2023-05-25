@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('campaign_tracking', function (Blueprint $table) {
+            $table->id();
             $table->date('record_date');
             $table->char('country_code', 3);
             $table->integer('campaign_id');

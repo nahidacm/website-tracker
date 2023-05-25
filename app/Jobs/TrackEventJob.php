@@ -37,17 +37,36 @@ class TrackEventJob implements ShouldQueue
         //Cache the ip API, to avoid duplicate calls.
 
         // $countryCode = GeoIP::getLocation($trackingData['cip'])->iso_code;
-        // Log::info($trackingData);
+        Log::info($trackingData);
         // Log::info($countryCode);
 
+        
+        $record_date = Carbon::today();
+        $country_code = GeoIP::getLocation($trackingData['cip'])->iso_code;
+        // [$cid, $crid, $bid, $did] = $trackingData;
+        // $trackingData;
+
         $campaignTracking = new CampaignTracking();
-        $campaignTracking->record_date = Carbon::today(); // @ToDo Confirm timezone and format
-        $campaignTracking->country_code = GeoIP::getLocation($trackingData['cip'])->iso_code;
-        $campaignTracking->campaign_id = 1;
-        $campaignTracking->creative_id = 1;
-        $campaignTracking->browser_id = 1;
-        $campaignTracking->device_id = 1;
-        $campaignTracking->count = 10;
-        $campaignTracking->save();
+        $shouldIncreaseCount = CampaignTracking::where([
+            'record_date' => $record_date,
+            'country_code' => $country_code,
+            'campaign_id' => $trackingData['cid'],
+            'creative_id' => $trackingData['crid'],
+            'browser_id' => $trackingData['bid'],
+            'device_id' => $trackingData['did'],
+        ])->first();
+
+        if ($shouldIncreaseCount) {
+            $campaignTracking->increment('count');
+        }else {
+            $campaignTracking->record_date = $record_date;
+            $campaignTracking->country_code = $country_code;
+            $campaignTracking->campaign_id = $trackingData['cid'];
+            $campaignTracking->creative_id = $trackingData['crid'];
+            $campaignTracking->browser_id = $trackingData['bid'];
+            $campaignTracking->device_id = $trackingData['did'];
+            $campaignTracking->count = 1;
+            $campaignTracking->save();
+        }  
     }
 }
