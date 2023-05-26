@@ -2,23 +2,23 @@
 
 namespace App\Jobs;
 
-use App\Http\Controllers\TrackingController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\CampaignTracking;
 use Torann\GeoIP\Facades\GeoIP;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class TrackEventJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $trackingData;
+    protected $campaign_tracking_table = 'campaign_tracking';
     /**
      * Create a new job instance.
      */
@@ -33,40 +33,32 @@ class TrackEventJob implements ShouldQueue
     public function handle(): void
     {
         $trackingData = $this->trackingData;
-        //get country code for the ip in this trackingData, store the data in DB as per requirement.
-        //Cache the ip API, to avoid duplicate calls.
-
-        // $countryCode = GeoIP::getLocation($trackingData['cip'])->iso_code;
-        Log::info($trackingData);
-        // Log::info($countryCode);
-
-        
         $record_date = Carbon::today();
         $country_code = GeoIP::getLocation($trackingData['cip'])->iso_code;
-        // [$cid, $crid, $bid, $did] = $trackingData;
-        // $trackingData;
 
-        $campaignTracking = new CampaignTracking();
-        $shouldIncreaseCount = CampaignTracking::where([
-            'record_date' => $record_date,
-            'country_code' => $country_code,
-            'campaign_id' => $trackingData['cid'],
-            'creative_id' => $trackingData['crid'],
-            'browser_id' => $trackingData['bid'],
-            'device_id' => $trackingData['did'],
-        ])->first();
-
-        if ($shouldIncreaseCount) {
-            $campaignTracking->increment('count');
-        }else {
-            $campaignTracking->record_date = $record_date;
-            $campaignTracking->country_code = $country_code;
-            $campaignTracking->campaign_id = $trackingData['cid'];
-            $campaignTracking->creative_id = $trackingData['crid'];
-            $campaignTracking->browser_id = $trackingData['bid'];
-            $campaignTracking->device_id = $trackingData['did'];
-            $campaignTracking->count = 1;
-            $campaignTracking->save();
-        }  
+        $builder = DB::table($this->campaign_tracking_table)
+            ->where('record_date', $record_date)
+            ->where('country_code', $country_code)
+            ->where('campaign_id', $trackingData['cid'])
+            ->where('creative_id', $trackingData['crid'])
+            ->where('browser_id', $trackingData['bid'])
+            ->where('device_id', $trackingData['did']);
+        
+        // Increment the count if the record already exists
+        if ($builder->count()) {
+            $builder->increment('count');
+        } else {
+            // Or add new entry
+            DB::table($this->campaign_tracking_table)->insert(
+                array(
+                    "record_date"=>$record_date,
+                    "country_code" => $country_code,
+                    "campaign_id" => $trackingData['cid'],
+                    "creative_id" => $trackingData['crid'],
+                    "browser_id" => $trackingData['bid'],
+                    "device_id" => $trackingData['did']
+                )
+            );
+        } 
     }
 }

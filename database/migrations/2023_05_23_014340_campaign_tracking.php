@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('creative_id');
             $table->integer('browser_id');
             $table->integer('device_id');
-            $table->bigInteger('count')->unsigned();
+            $table->bigInteger('count')->unsigned()->default(1);
         });
     }
 
