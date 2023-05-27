@@ -20,7 +20,8 @@ docker run --rm \
 5. Install JS dependecy: `./vendor/bin/sail npm install`
 6. Generate key: `./vendor/bin/sail artisan key:generate`
 7. Database migrate: `./vendor/bin/sail artisan migrate:fresh`
-8. Open http://localhost:3099 this will send an conversion request to backend
+8. Open http://localhost:3099 on your browser. this will send an conversion request to backend
+9. You will see nothing on this page. because it only have an one pixel transparent gif image.
 
 ## Test
 Test case directory: `./tests`
