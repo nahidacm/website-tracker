@@ -34,3 +34,4 @@ Test case directory: `./tests`
 - For sake of simplicity, I have left the test db and dev db to same.
 - IP Geo data fetching and Caching is done by the laravel package named `torann/geoip`
 - Cache and Queue is using Reis
+- Please note: mapped ports for docker services are frontend port: `3099`, Redis port: `6379`, MySql port: `3098`. these ports must be abailable on host machine. Incase if they are already availed, please update from `.env`
