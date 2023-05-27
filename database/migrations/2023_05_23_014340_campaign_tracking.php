@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('campaign_tracking', function (Blueprint $table) {
-            $table->id();
             $table->date('record_date');
             $table->char('country_code', 3);
             $table->integer('campaign_id');
@@ -20,6 +19,7 @@ return new class extends Migration
             $table->integer('browser_id');
             $table->integer('device_id');
             $table->bigInteger('count')->unsigned()->default(1);
+            $table->primary(['record_date', 'country_code', 'campaign_id', 'creative_id', 'browser_id', 'device_id']);
         });
     }
 
